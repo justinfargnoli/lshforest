@@ -13,21 +13,27 @@ func NewTrie() Trie {
 
 // Preorder performs a preorder traversal of the tree
 func (t Trie) Preorder(function func(*Node)) {
-	t.root.preorder(function)
+	if t.root != nil {
+		t.root.preorder(function)
+	}
 }
 
 // Postorder performs a postorder traversal of the tree
 func (t Trie) Postorder(function func(*Node)) {
-	t.root.postorder(function)
+	if t.root != nil {
+		t.root.postorder(function)
+	}
 }
 
 // Inorder performs a inorder traversal of the tree
 func (t Trie) Inorder(function func(*Node)) {
-	t.root.inorder(function)
+	if t.root != nil {
+		t.root.inorder(function)
+	}
 }
 
 // Insert adds an element to the tire
-func (t Trie) Insert(element *Element) {
+func (t *Trie) Insert(element *Element) {
 	if element == nil {
 		panic("lshforest/trie Trie.Insert()")
 	}
@@ -42,6 +48,9 @@ func (t Trie) Insert(element *Element) {
 func (t Trie) Get(hash *[]Bit) []*Element {
 	if hash == nil {
 		panic("lshforest/trie Trie.Get()")
+	}
+	if t.root == nil {
+		return []*Element{}
 	}
 	return t.root.get(hash, 0)
 }
@@ -71,11 +80,11 @@ func (n *Node) isInternal() bool {
 }
 
 func (n *Node) isLeaf() bool {
-	return n.left == nil && n.right == nil
+	return n.left == nil && n.right == nil && len(n.elements) == 1
 }
 
 func (n *Node) isLeafBucket() bool {
-	return n.isLeaf() && len(n.elements) >= 1
+	return n.left == nil && n.right == nil && len(n.elements) >= 1
 }
 
 // Decendants returns the children of the node
@@ -150,32 +159,25 @@ func (n *Node) insert(element *Element, depth uint) {
 			n.elements = append(n.elements, element)
 			return
 		}
-		internalNode := &Node{Parent: n.Parent}
 		if element.hash[depth] == n.elements[0].hash[depth] { // they're going the same way
 			if element.hash[depth] == left { // they're going left
-				n.Parent = internalNode
-				internalNode.left = n
-				internalNode.left.insert(element, depth+1)
+				n.left = &Node{Parent: n, elements: n.elements}
+				n.elements = []*Element{}
+				n.left.insert(element, depth+1)
 			} else { // they're going right
-				n.Parent = n
-				internalNode.left = n
-				internalNode.left.insert(element, depth+1)
+				n.right = &Node{Parent: n, elements: n.elements}
+				n.elements = []*Element{}
+				n.right.insert(element, depth+1)
 			}
 		} else { // they're going different ways
 			if element.hash[depth] == left { // element goes left & node goes right
-				n.Parent = internalNode
-				internalNode.right = n
-				internalNode.left = &Node{
-					elements: []*Element{element},
-					Parent:   internalNode,
-				}
+				n.left = &Node{Parent: n, elements: []*Element{element}}
+				n.right = &Node{Parent: n, elements: n.elements}
+				n.elements = []*Element{}
 			} else { // node goes left & element goes right
-				n.Parent = internalNode
-				internalNode.left = n
-				internalNode.right = &Node{
-					elements: []*Element{element},
-					Parent:   internalNode,
-				}
+				n.left = &Node{Parent: n, elements: n.elements}
+				n.right = &Node{Parent: n, elements: []*Element{element}}
+				n.elements = []*Element{}
 			}
 		}
 	} else {
