@@ -62,6 +62,18 @@ func EqArrString(s1, s2 []string) bool {
 	return true
 }
 
+func EqArrElement(e1, e2 []*Element) bool {
+	if len(e1) != len(e2) {
+		return false
+	}
+	for i := range e1 {
+		if e1[i] != e2[i] {
+			return false
+		}
+	}
+	return true
+}
+
 func TestEmptyTrie(t *testing.T) {
 	trie := NewTrie()
 	trie.Preorder(func(node *Node) {})
@@ -97,6 +109,30 @@ func TestInsert(t *testing.T) {
 	}
 }
 
-func TestGet(t *testing.T) {
+func testGet(t *testing.T, e1, e2 []*Element) {
+	if !EqArrElement(e1, e2) {
+		t.Fatalf("get: (%v) | correct: (%v)\n", e1, e2)
+	}
+}
 
+func TestGet(t *testing.T) {
+	trie := NewTrie()
+	insert(&trie, elements1)
+	testGet(t, trie.Get(&elements1[0].hash), []*Element{elements1[0]})
+	testGet(t, trie.Get(&elements1[1].hash), []*Element{elements1[1]})
+
+	trie = NewTrie()
+	insert(&trie, elements2)
+	testGet(t, trie.Get(&elements2[0].hash), []*Element{elements2[0]})
+	testGet(t, trie.Get(&elements2[1].hash), []*Element{elements2[1]})
+	testGet(t, trie.Get(&elements2[2].hash), []*Element{elements2[2]})
+	testGet(t, trie.Get(&elements2[3].hash), []*Element{elements2[3]})
+
+	trie = NewTrie()
+	insert(&trie, elements2Bucket)
+	testGet(t, trie.Get(&elements2Bucket[0].hash),
+		[]*Element{elements2Bucket[0], elements2Bucket[1]})
+	testGet(t, trie.Get(&elements2Bucket[2].hash),
+		[]*Element{elements2Bucket[2], elements2Bucket[3]})
+	testGet(t, trie.Get(&[]Bit{0, 1}), []*Element{})
 }

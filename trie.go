@@ -128,12 +128,12 @@ func (n *Node) get(hash *[]Bit, depth uint) []*Element {
 			if n.left == nil {
 				return []*Element{}
 			}
-			n.left.get(hash, depth+1)
+			return n.left.get(hash, depth+1)
 		} else {
 			if n.right == nil {
 				return []*Element{}
 			}
-			n.right.get(hash, depth+1)
+			return n.right.get(hash, depth+1)
 		}
 	}
 	return n.elements
