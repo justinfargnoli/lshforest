@@ -34,15 +34,15 @@ var (
 	}
 )
 
-func insert(trie *Trie, elements []*Element) {
+func insert(lshTree *LSHTree, elements []*Element) {
 	for _, element := range elements {
-		trie.Insert(element)
+		lshTree.Insert(element)
 	}
 }
 
-func valuesInorder(trie Trie) []string {
+func valuesInorder(lshTree LSHTree) []string {
 	var values []string
-	trie.Inorder(func(node *Node) {
+	lshTree.Inorder(func(node *Node) {
 		for _, element := range node.elements {
 			values = append(values, element.value.(string))
 		}
@@ -74,37 +74,37 @@ func EqArrElement(e1, e2 []*Element) bool {
 	return true
 }
 
-func TestEmptyTrie(t *testing.T) {
-	trie := NewTrie()
-	trie.Preorder(func(node *Node) {})
-	trie.Postorder(func(node *Node) {})
-	trie.Inorder(func(node *Node) {})
-	trie.Get(&[]Bit{})
-	trie.Insert(&Element{})
+func TestEmptyLSHTree(t *testing.T) {
+	lshTree := NewLSHTree()
+	lshTree.Preorder(func(node *Node) {})
+	lshTree.Postorder(func(node *Node) {})
+	lshTree.Inorder(func(node *Node) {})
+	lshTree.Get(&[]Bit{})
+	lshTree.Insert(&Element{})
 }
 
 func TestInsert(t *testing.T) {
-	trie := NewTrie()
-	insert(&trie, elements1)
-	if !EqArrString(valuesInorder(trie), []string{"a", "b"}) {
+	lshTree := NewLSHTree()
+	insert(&lshTree, elements1)
+	if !EqArrString(valuesInorder(lshTree), []string{"a", "b"}) {
 		t.FailNow()
 	}
 
-	trie = NewTrie()
-	insert(&trie, elements2)
-	if !EqArrString(valuesInorder(trie), []string{"a", "b", "c", "d"}) {
+	lshTree = NewLSHTree()
+	insert(&lshTree, elements2)
+	if !EqArrString(valuesInorder(lshTree), []string{"a", "b", "c", "d"}) {
 		t.FailNow()
 	}
 
-	trie = NewTrie()
-	insert(&trie, elements2Bucket)
-	if !EqArrString(valuesInorder(trie), []string{"a", "b", "c", "d"}) {
+	lshTree = NewLSHTree()
+	insert(&lshTree, elements2Bucket)
+	if !EqArrString(valuesInorder(lshTree), []string{"a", "b", "c", "d"}) {
 		t.FailNow()
 	}
 
-	trie = NewTrie()
-	insert(&trie, elements3)
-	if !EqArrString(valuesInorder(trie), []string{"a", "b", "c", "d", "e", "f", "g", "h"}) {
+	lshTree = NewLSHTree()
+	insert(&lshTree, elements3)
+	if !EqArrString(valuesInorder(lshTree), []string{"a", "b", "c", "d", "e", "f", "g", "h"}) {
 		t.FailNow()
 	}
 }
@@ -116,23 +116,23 @@ func testGet(t *testing.T, e1, e2 []*Element) {
 }
 
 func TestGet(t *testing.T) {
-	trie := NewTrie()
-	insert(&trie, elements1)
-	testGet(t, trie.Get(&elements1[0].hash), []*Element{elements1[0]})
-	testGet(t, trie.Get(&elements1[1].hash), []*Element{elements1[1]})
+	lshTree := NewLSHTree()
+	insert(&lshTree, elements1)
+	testGet(t, lshTree.Get(&elements1[0].hash), []*Element{elements1[0]})
+	testGet(t, lshTree.Get(&elements1[1].hash), []*Element{elements1[1]})
 
-	trie = NewTrie()
-	insert(&trie, elements2)
-	testGet(t, trie.Get(&elements2[0].hash), []*Element{elements2[0]})
-	testGet(t, trie.Get(&elements2[1].hash), []*Element{elements2[1]})
-	testGet(t, trie.Get(&elements2[2].hash), []*Element{elements2[2]})
-	testGet(t, trie.Get(&elements2[3].hash), []*Element{elements2[3]})
+	lshTree = NewLSHTree()
+	insert(&lshTree, elements2)
+	testGet(t, lshTree.Get(&elements2[0].hash), []*Element{elements2[0]})
+	testGet(t, lshTree.Get(&elements2[1].hash), []*Element{elements2[1]})
+	testGet(t, lshTree.Get(&elements2[2].hash), []*Element{elements2[2]})
+	testGet(t, lshTree.Get(&elements2[3].hash), []*Element{elements2[3]})
 
-	trie = NewTrie()
-	insert(&trie, elements2Bucket)
-	testGet(t, trie.Get(&elements2Bucket[0].hash),
+	lshTree = NewLSHTree()
+	insert(&lshTree, elements2Bucket)
+	testGet(t, lshTree.Get(&elements2Bucket[0].hash),
 		[]*Element{elements2Bucket[0], elements2Bucket[1]})
-	testGet(t, trie.Get(&elements2Bucket[2].hash),
+	testGet(t, lshTree.Get(&elements2Bucket[2].hash),
 		[]*Element{elements2Bucket[2], elements2Bucket[3]})
-	testGet(t, trie.Get(&[]Bit{0, 1}), []*Element{})
+	testGet(t, lshTree.Get(&[]Bit{0, 1}), []*Element{})
 }

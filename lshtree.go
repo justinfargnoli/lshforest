@@ -1,41 +1,41 @@
 package lshforest
 
-// Trie is a prefix tree which uses a Element.hash, a []Bit, to determine the
+// LSHTree is a prefix tree which uses a Element.hash, a []Bit, to determine the
 // elements prefix
-type Trie struct {
+type LSHTree struct {
 	root *Node
 }
 
-// NewTrie constructs an empty trie
-func NewTrie() Trie {
-	return Trie{}
+// NewLSHTree constructs an empty LSHTree
+func NewLSHTree() LSHTree {
+	return LSHTree{}
 }
 
 // Preorder performs a preorder traversal of the tree
-func (t Trie) Preorder(function func(*Node)) {
+func (t LSHTree) Preorder(function func(*Node)) {
 	if t.root != nil {
 		t.root.preorder(function)
 	}
 }
 
 // Postorder performs a postorder traversal of the tree
-func (t Trie) Postorder(function func(*Node)) {
+func (t LSHTree) Postorder(function func(*Node)) {
 	if t.root != nil {
 		t.root.postorder(function)
 	}
 }
 
 // Inorder performs a inorder traversal of the tree
-func (t Trie) Inorder(function func(*Node)) {
+func (t LSHTree) Inorder(function func(*Node)) {
 	if t.root != nil {
 		t.root.inorder(function)
 	}
 }
 
 // Insert adds an element to the tire
-func (t *Trie) Insert(element *Element) {
+func (t *LSHTree) Insert(element *Element) {
 	if element == nil {
-		panic("lshforest/trie Trie.Insert()")
+		panic("lshforest/LSHTree LSHTree.Insert()")
 	}
 	if t.root == nil {
 		t.root = &Node{elements: []*Element{element}}
@@ -45,9 +45,9 @@ func (t *Trie) Insert(element *Element) {
 }
 
 // Get returns elements with equal hash values
-func (t Trie) Get(hash *[]Bit) []*Element {
+func (t *LSHTree) Get(hash *[]Bit) []*Element {
 	if hash == nil {
-		panic("lshforest/trie Trie.Get()")
+		panic("lshforest/LSHTree LSHTree.Get()")
 	}
 	if t.root == nil {
 		return []*Element{}
@@ -60,16 +60,7 @@ const (
 	right = 1
 )
 
-// Bit represents a bit in an element's hash bit array
-type Bit uint8
-
-// Element is an element in the trie
-type Element struct {
-	hash  []Bit
-	value interface{}
-}
-
-// Node is a node in the trie
+// Node is a node in the LSHTree
 type Node struct {
 	elements            []*Element
 	left, right, Parent *Node
