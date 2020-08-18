@@ -1,17 +1,10 @@
 package lshforest
 
-// Bit represents a bit in an element's hash bit array
-type Bit uint8
-
-// Element is an element in the trie
-type Element struct {
-	hash  []Bit
-	value interface{}
-}
+import "github.com/justinfargnoli/lshforest/pkg/lshtree"
 
 // LSHForest is an index of high-dimensional data based on cosine similarity 
 type LSHForest struct {
-	trees []LSHTree
+	trees []lshtree.Trie
 }
 
 // NewLSHForestDefault constructs an LSHForest struct with sensible defaults
@@ -24,15 +17,15 @@ func NewLSHForestDefault(dim uint) *LSHForest {
 // is, the more accurate LSHForest is and the more space LSHForest takes up.
 // dim := the dimension of the input vectors
 func NewLSHForest(l, maxK, dim uint) *LSHForest {
-	var trees []LSHTree
+	var trees []lshtree.Trie
 	for i := uint(0); i < l; i++ {
-		trie := NewLSHTree()
+		trie := lshtree.NewTrie()
 		trees = append(trees, trie)
 	}
 	return &LSHForest{trees: trees}
 }
 
-// Insert puts the vector into the LSHForest
-func (f *LSHForest) Insert(vector []float64) {
+// // Insert puts the vector into the LSHForest
+// func (f *LSHForest) Insert(vector []float64, value interface{}) {
 	
-}
+// }

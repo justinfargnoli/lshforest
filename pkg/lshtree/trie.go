@@ -1,41 +1,43 @@
-package lshforest
+package lshtree
 
-// LSHTree is a prefix tree which uses a Element.hash, a []Bit, to determine the
+import "github.com/justinfargnoli/lshforest/pkg/hash"
+
+// Trie is a prefix tree which uses a Element.hash, a []Bit, to determine the
 // elements prefix
-type LSHTree struct {
+type Trie struct {
 	root *Node
 }
 
-// NewLSHTree constructs an empty LSHTree
-func NewLSHTree() LSHTree {
-	return LSHTree{}
+// NewTrie constructs an empty Trie
+func NewTrie() Trie {
+	return Trie{}
 }
 
 // Preorder performs a preorder traversal of the tree
-func (t LSHTree) Preorder(function func(*Node)) {
+func (t Trie) Preorder(function func(*Node)) {
 	if t.root != nil {
 		t.root.preorder(function)
 	}
 }
 
 // Postorder performs a postorder traversal of the tree
-func (t LSHTree) Postorder(function func(*Node)) {
+func (t Trie) Postorder(function func(*Node)) {
 	if t.root != nil {
 		t.root.postorder(function)
 	}
 }
 
 // Inorder performs a inorder traversal of the tree
-func (t LSHTree) Inorder(function func(*Node)) {
+func (t Trie) Inorder(function func(*Node)) {
 	if t.root != nil {
 		t.root.inorder(function)
 	}
 }
 
 // Insert adds an element to the tire
-func (t *LSHTree) Insert(element *Element) {
+func (t *Trie) Insert(element *Element) {
 	if element == nil {
-		panic("lshforest/LSHTree LSHTree.Insert()")
+		panic("lshforest/lshtree/Trie Trie.Insert()")
 	}
 	if t.root == nil {
 		t.root = &Node{elements: []*Element{element}}
@@ -45,9 +47,9 @@ func (t *LSHTree) Insert(element *Element) {
 }
 
 // Get returns elements with equal hash values
-func (t *LSHTree) Get(hash *[]Bit) []*Element {
+func (t *Trie) Get(hash *[]hash.Bit) []*Element {
 	if hash == nil {
-		panic("lshforest/LSHTree LSHTree.Get()")
+		panic("lshforest/lshtree/Trie Trie.Get()")
 	}
 	if t.root == nil {
 		return []*Element{}
@@ -60,7 +62,7 @@ const (
 	right = 1
 )
 
-// Node is a node in the LSHTree
+// Node is a node in the Trie
 type Node struct {
 	elements            []*Element
 	left, right, Parent *Node
@@ -113,7 +115,7 @@ func (n *Node) inorder(function func(*Node)) {
 	}
 }
 
-func (n *Node) get(hash *[]Bit, depth uint) []*Element {
+func (n *Node) get(hash *[]hash.Bit, depth uint) []*Element {
 	if n.isInternal() {
 		if (*hash)[depth] == left {
 			if n.left == nil {
