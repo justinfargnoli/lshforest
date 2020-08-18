@@ -11,22 +11,31 @@ type LSHForest struct {
 	hashers []hash.Hasher
 }
 
-// NewCosineDefault constructs an LSHForest struct for cosine similarity with
+// NewDefault constructs an LSHForest struct for cosine similarity with
 // sensible defaults
-func NewCosineDefault(dim uint) *LSHForest {
-	return NewCosine(5, 20, dim)
+func NewDefault(dim, metric uint) *LSHForest {
+	return New(5, 20, dim, metric)
 }
 
-// NewCosine constructs an LSHForest struct for cosine similarity. l := the
+var (
+	// Cosine indicates to use cosine similarity and simhash
+	Cosine = uint(0)
+)
+
+// New constructs an LSHForest struct for cosine similarity. l := the
 // number of trees in the forest of LSHForest. maxK := the maximum number of
 // hash functions. The larger maxK is, the more accurate LSHForest is and the
 // more space LSHForest takes up. dim := the dimension of the input vectors
-func NewCosine(l, maxK, dim uint) *LSHForest {
+func New(l, maxK, dim, metric uint) *LSHForest {
 	var trees []lshtree.Trie
 	var hashers []hash.Hasher
 	for i := uint(0); i < l; i++ {
 		trees = append(trees, lshtree.NewTrie())
-		hashers = append(hashers, hash.NewOnline(maxK, dim))
+		if metric == Cosine {
+			hashers = append(hashers, hash.NewOnline(maxK, dim))
+		} else {
+			panic("lshforest invalid hasher")
+		}
 	}
 	return &LSHForest{trees: trees, hashers: hashers}
 }
