@@ -35,24 +35,21 @@ func (t Trie) Inorder(function func(*Node)) {
 }
 
 // Insert adds an element to the tire
-func (t *Trie) Insert(element *Element) {
-	if element == nil {
-		panic("lshforest/lshtree/Trie Trie.Insert()")
-	}
+func (t *Trie) Insert(element Element) {
 	if t.root == nil {
-		t.root = &Node{elements: []*Element{element}}
+		t.root = &Node{elements: []Element{element}}
 	} else {
 		t.root.insert(element, 0)
 	}
 }
 
 // Get returns elements with equal hash values
-func (t *Trie) Get(hash *[]hash.Bit) []*Element {
+func (t *Trie) Get(hash *[]hash.Bit) *[]Element {
 	if hash == nil {
 		panic("lshforest/lshtree/Trie Trie.Get()")
 	}
 	if t.root == nil {
-		return []*Element{}
+		return &[]Element{}
 	}
 	return t.root.get(hash, 0)
 }
@@ -64,7 +61,7 @@ const (
 
 // Node is a node in the Trie
 type Node struct {
-	elements            []*Element
+	elements            []Element
 	left, right, Parent *Node
 }
 
@@ -115,61 +112,61 @@ func (n *Node) inorder(function func(*Node)) {
 	}
 }
 
-func (n *Node) get(hash *[]hash.Bit, depth uint) []*Element {
+func (n *Node) get(hash *[]hash.Bit, depth uint) *[]Element {
 	if n.isInternal() {
 		if (*hash)[depth] == left {
 			if n.left == nil {
-				return []*Element{}
+				return &[]Element{}
 			}
 			return n.left.get(hash, depth+1)
 		}
 		if n.right == nil {
-			return []*Element{}
+			return &[]Element{}
 		}
 		return n.right.get(hash, depth+1)
 	}
-	return n.elements
+	return &n.elements
 }
 
-func (n *Node) insert(element *Element, depth uint) {
+func (n *Node) insert(element Element, depth uint) {
 	if n.isInternal() {
-		if element.hash[depth] == left {
+		if (*element.hash)[depth] == left {
 			if n.left == nil {
-				n.left = &Node{elements: []*Element{element}, Parent: n}
+				n.left = &Node{elements: []Element{element}, Parent: n}
 			} else {
 				n.left.insert(element, depth+1)
 			}
 		} else {
 			if n.right == nil {
-				n.right = &Node{elements: []*Element{element}, Parent: n}
+				n.right = &Node{elements: []Element{element}, Parent: n}
 			} else {
 				n.right.insert(element, depth+1)
 			}
 		}
 	} else if n.isLeaf() {
-		if depth == uint(len(element.hash)) {
+		if depth == uint(len(*element.hash)) {
 			n.elements = append(n.elements, element)
 			return
 		}
-		if element.hash[depth] == n.elements[0].hash[depth] { // they're going the same way
-			if element.hash[depth] == left { // they're going left
+		if (*element.hash)[depth] == (*n.elements[0].hash)[depth] { // they're going the same way
+			if (*element.hash)[depth] == left { // they're going left
 				n.left = &Node{Parent: n, elements: n.elements}
-				n.elements = []*Element{}
+				n.elements = []Element{}
 				n.left.insert(element, depth+1)
 			} else { // they're going right
 				n.right = &Node{Parent: n, elements: n.elements}
-				n.elements = []*Element{}
+				n.elements = []Element{}
 				n.right.insert(element, depth+1)
 			}
 		} else { // they're going different ways
-			if element.hash[depth] == left { // element goes left & node goes right
-				n.left = &Node{Parent: n, elements: []*Element{element}}
+			if (*element.hash)[depth] == left { // element goes left & node goes right
+				n.left = &Node{Parent: n, elements: []Element{element}}
 				n.right = &Node{Parent: n, elements: n.elements}
-				n.elements = []*Element{}
+				n.elements = []Element{}
 			} else { // node goes left & element goes right
 				n.left = &Node{Parent: n, elements: n.elements}
-				n.right = &Node{Parent: n, elements: []*Element{element}}
-				n.elements = []*Element{}
+				n.right = &Node{Parent: n, elements: []Element{element}}
+				n.elements = []Element{}
 			}
 		}
 	} else {

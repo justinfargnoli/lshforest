@@ -10,7 +10,7 @@ func TestOnlineSimhash(t *testing.T) {
 	}
 	online := NewOnline(300, uint(len(vectors[0])))
 	for _, v := range vectors {
-		online.Hash(v)
+		online.Hash(&v)
 	}
 }
 
@@ -20,5 +20,5 @@ func TestOffline(t *testing.T) {
 		{0.0, -2.0, 3.3, -4.2},
 		{0.0, 2.0, -3.3, -4.2},
 	}
-	Offline(vectors, 300)
+	Offline(&vectors, 300)
 }

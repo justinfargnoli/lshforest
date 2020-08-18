@@ -5,5 +5,5 @@ type Bit uint8
 
 // Hasher is a type which can hash a []float64
 type Hasher interface {
-	Hash([]float64) *[]Bit
+	Hash(*[]float64) *[]Bit
 }
