@@ -7,7 +7,7 @@ import (
 
 // LSHForest is an index of high-dimensional data based on cosine similarity
 type LSHForest struct {
-	trees   []lshtree.Trie
+	trees   []lshtree.LSHTree
 	hashers []hash.Hasher
 }
 
@@ -27,10 +27,11 @@ var (
 // hash functions. The larger maxK is, the more accurate LSHForest is and the
 // more space LSHForest takes up. dim := the dimension of the input vectors
 func New(l, maxK, dim, metric uint) *LSHForest {
-	var trees []lshtree.Trie
+	var trees []lshtree.LSHTree
 	var hashers []hash.Hasher
 	for i := uint(0); i < l; i++ {
-		trees = append(trees, lshtree.NewTrie())
+		trie := lshtree.NewTrie()
+		trees = append(trees, &trie)
 		if metric == Cosine {
 			hashers = append(hashers, hash.NewOnline(maxK, dim))
 		} else {
@@ -47,4 +48,30 @@ func (f *LSHForest) Insert(vector *[]float64, value interface{}) {
 	}
 }
 
-// func (f *LSHForest) syncAscend()
+// Query returns a list of values sorted by similarity to the query vector
+func (f *LSHForest) Query(vector *[]float64, m uint) *[]interface{} {
+	var nodes []*lshtree.Node
+	var depths []uint
+	for i, tree := range f.trees {
+		node, depth := tree.Descend(f.hashers[i].Hash(vector))
+		nodes = append(nodes, node)
+		depths = append(depths, depth)
+	}
+
+	elements := f.syncAscend(&nodes, &depths)
+	elements = elementsSort(elements)
+	
+	var values []interface{}
+	for _, element := range *elements {
+		values = append(values, element.Value)
+	}
+	return &values
+}
+
+func elementsSort(elements *[]lshtree.Element) *[]lshtree.Element {
+	panic("unimplemented")
+}
+
+func (f *LSHForest) syncAscend(node *[]*lshtree.Node, depth *[]uint) *[]lshtree.Element {
+	panic("unimplemented")
+}

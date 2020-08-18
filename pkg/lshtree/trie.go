@@ -43,6 +43,11 @@ func (t *Trie) Insert(element Element) {
 	}
 }
 
+// Descend returns the leaf with the larges prefix matching hash 
+func (t *Trie) Descend(hash *[]hash.Bit) (*Node, uint) {
+	panic("unimplemented")
+}
+
 // Get returns elements with equal hash values
 func (t *Trie) Get(hash *[]hash.Bit) *[]Element {
 	if hash == nil {
