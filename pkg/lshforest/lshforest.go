@@ -11,16 +11,17 @@ type LSHForest struct {
 	hashers []hash.Hasher
 }
 
-// NewLSHForestDefault constructs an LSHForest struct with sensible defaults
-func NewLSHForestDefault(dim uint) *LSHForest {
-	return NewLSHForest(5, 20, dim)
+// NewCosineDefault constructs an LSHForest struct for cosine similarity with
+// sensible defaults
+func NewCosineDefault(dim uint) *LSHForest {
+	return NewCosine(5, 20, dim)
 }
 
-// NewLSHForest constructs an LSHForest. l := the number of trees in the forest
-// of LSHForest. maxK := the maximum number of hash functions. The larger maxK
-// is, the more accurate LSHForest is and the more space LSHForest takes up.
-// dim := the dimension of the input vectors
-func NewLSHForest(l, maxK, dim uint) *LSHForest {
+// NewCosine constructs an LSHForest struct for cosine similarity. l := the
+// number of trees in the forest of LSHForest. maxK := the maximum number of
+// hash functions. The larger maxK is, the more accurate LSHForest is and the
+// more space LSHForest takes up. dim := the dimension of the input vectors
+func NewCosine(l, maxK, dim uint) *LSHForest {
 	var trees []lshtree.Trie
 	var hashers []hash.Hasher
 	for i := uint(0); i < l; i++ {
@@ -36,3 +37,5 @@ func (f *LSHForest) Insert(vector *[]float64, value interface{}) {
 		tree.Insert(lshtree.NewElement(f.hashers[i].Hash(vector), vector, value))
 	}
 }
+
+// func (f *LSHForest) syncAscend()
