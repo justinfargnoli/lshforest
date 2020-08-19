@@ -43,9 +43,15 @@ func (t *Trie) Insert(element Element) {
 	}
 }
 
-// Descend returns the leaf with the larges prefix matching hash 
+// Descend returns the leaf with the larges prefix matching hash
 func (t *Trie) Descend(hash *[]hash.Bit) (*Node, uint) {
-	panic("unimplemented")
+	if hash == nil {
+		panic("lshforest/lshtree/Trie Trie.Descend()")
+	}
+	if t.root == nil {
+		return nil, 0
+	}
+	return t.root.descend(hash, 0)
 }
 
 // Get returns elements with equal hash values
@@ -115,6 +121,22 @@ func (n *Node) inorder(function func(*Node)) {
 	if n.right != nil {
 		n.right.inorder(function)
 	}
+}
+
+func (n *Node) descend(hash *[]hash.Bit, depth uint) (*Node, uint) {
+	if n.isInternal() {
+		if (*hash)[depth] == left {
+			if n.left == nil {
+				return n.right.descend(hash, depth+1)
+			}
+			return n.left.descend(hash, depth+1)
+		}
+		if n.right == nil {
+			return n.left.descend(hash, depth+1)
+		}
+		return n.right.descend(hash, depth+1)
+	}
+	return n, depth
 }
 
 func (n *Node) get(hash *[]hash.Bit, depth uint) *[]Element {

@@ -15,7 +15,7 @@ func NewElement(hash *[]hash.Bit, vector *[]float64, value interface{}) Element 
 }
 
 // LSHTree is a trie within the LSHForest
-type LSHTree interface{
+type LSHTree interface {
 	Insert(Element)
 	Descend(*[]hash.Bit) (*Node, uint)
 }

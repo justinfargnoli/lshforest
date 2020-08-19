@@ -34,6 +34,16 @@ var (
 		{hash: &[]hash.Bit{1, 1, 0}, Value: "g"},
 		{hash: &[]hash.Bit{1, 1, 1}, Value: "h"},
 	}
+
+	elements3Var = []Element{
+		{hash: &[]hash.Bit{0, 0, 0}, Value: "a"},
+		{hash: &[]hash.Bit{0, 0, 1}, Value: "b"},
+		{hash: &[]hash.Bit{0, 1, 0}, Value: "c"},
+		{hash: &[]hash.Bit{0, 1, 1}, Value: "d"},
+		{hash: &[]hash.Bit{1, 0, 0}, Value: "e"},
+		{hash: &[]hash.Bit{1, 0, 1}, Value: "f"},
+		{hash: &[]hash.Bit{1, 1, 0}, Value: "g"},
+	}
 )
 
 func insert(trie *Trie, elements []Element) {
@@ -82,6 +92,7 @@ func TestEmptyTrie(t *testing.T) {
 	trie.Postorder(func(node *Node) {})
 	trie.Inorder(func(node *Node) {})
 	trie.Get(&[]hash.Bit{})
+	trie.Descend(&[]hash.Bit{})
 	trie.Insert(Element{})
 }
 
@@ -108,6 +119,29 @@ func TestInsert(t *testing.T) {
 	insert(&trie, elements3)
 	if !EqArrString(valuesInorder(trie), []string{"a", "b", "c", "d", "e", "f", "g", "h"}) {
 		t.FailNow()
+	}
+}
+
+func TestDescend(t *testing.T) {
+	trie := NewTrie()
+	insert(&trie, elements3Var)
+
+	node, depth := trie.Descend(&[]hash.Bit{0, 0, 0})
+	if (*node).elements[0].Value != "a" || depth != 3 {
+		t.Fatalf("expected: (a, 3) | got: (%v, %v)\n",
+			(*node).elements[0].Value, depth)
+	}
+
+	node, depth = trie.Descend(&[]hash.Bit{0, 0, 1})
+	if (*node).elements[0].Value != "b" || depth != 3 {
+		t.Fatalf("expected: (b, 3) | got: (%v, %v)\n",
+			(*node).elements[0].Value, depth)
+	}
+
+	node, depth = trie.Descend(&[]hash.Bit{1, 1, 1})
+	if (*node).elements[0].Value != "g" || depth != 2 {
+		t.Fatalf("expected: (g, 2) | got: (%v, %v)\n",
+			(*node).elements[0].Value, depth)
 	}
 }
 

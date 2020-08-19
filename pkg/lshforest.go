@@ -60,7 +60,7 @@ func (f *LSHForest) Query(vector *[]float64, m uint) *[]interface{} {
 
 	elements := f.syncAscend(&nodes, &depths)
 	elements = elementsSort(elements)
-	
+
 	var values []interface{}
 	for _, element := range *elements {
 		values = append(values, element.Value)
