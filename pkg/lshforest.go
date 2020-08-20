@@ -1,8 +1,10 @@
 package lshforest
 
 import (
+	"github.com/gaspiman/cosine_similarity"
 	"github.com/justinfargnoli/lshforest/pkg/hash"
 	"github.com/justinfargnoli/lshforest/pkg/lshtree"
+	"sort"
 )
 
 // LSHForest is an index of high-dimensional data based on cosine similarity
@@ -59,7 +61,7 @@ func (f *LSHForest) Query(vector *[]float64, m uint) *[]interface{} {
 	}
 
 	elements := f.syncAscend(&nodes, &depths, m)
-	elements = elementsSort(elements)
+	elementsSort(elements, vector)
 
 	var values []interface{}
 	for _, element := range *elements {
@@ -68,8 +70,25 @@ func (f *LSHForest) Query(vector *[]float64, m uint) *[]interface{} {
 	return &values
 }
 
-func elementsSort(elements *[]lshtree.Element) *[]lshtree.Element {
-	panic("unimplemented")
+func elementsSort(elements *[]lshtree.Element, query *[]float64) {
+	var ids map[lshtree.Element]uint
+	for i, element := range *elements {
+		ids[element] = uint(i)
+	}
+
+	var similarities map[uint]float64
+	for element, id := range ids {
+		similarity, err := cosine_similarity.Cosine(*query, *element.Vector)
+		if err != nil {
+			panic("lshforest elementsSort()") // todo: figure out how to handle this error case
+		}
+		similarities[id] = similarity
+	}
+
+	sort.Slice(*elements, func(i, j int) bool {
+		return similarities[ids[(*elements)[i]]] <
+			similarities[ids[(*elements)[j]]]
+	})
 }
 
 func maxUint(slice *[]uint) uint {

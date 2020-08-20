@@ -89,7 +89,7 @@ func (n *Node) isLeafBucket() bool {
 }
 
 // Decendants returns the children of the node
-func (n *Node) Decendants() ([]*Node) {
+func (n *Node) Decendants() []*Node {
 	var nodes []*Node
 	if n.left != nil {
 		n.left.preorder(func(node *Node) {
