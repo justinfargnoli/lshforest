@@ -55,7 +55,7 @@ func insert(trie *Trie, elements []Element) {
 func valuesInorder(trie Trie) []string {
 	var values []string
 	trie.Inorder(func(node *Node) {
-		for _, element := range node.elements {
+		for _, element := range node.Elements {
 			values = append(values, element.Value.(string))
 		}
 	})
@@ -127,21 +127,21 @@ func TestDescend(t *testing.T) {
 	insert(&trie, elements3Var)
 
 	node, depth := trie.Descend(&[]hash.Bit{0, 0, 0})
-	if (*node).elements[0].Value != "a" || depth != 3 {
+	if (*node).Elements[0].Value != "a" || depth != 3 {
 		t.Fatalf("expected: (a, 3) | got: (%v, %v)\n",
-			(*node).elements[0].Value, depth)
+			(*node).Elements[0].Value, depth)
 	}
 
 	node, depth = trie.Descend(&[]hash.Bit{0, 0, 1})
-	if (*node).elements[0].Value != "b" || depth != 3 {
+	if (*node).Elements[0].Value != "b" || depth != 3 {
 		t.Fatalf("expected: (b, 3) | got: (%v, %v)\n",
-			(*node).elements[0].Value, depth)
+			(*node).Elements[0].Value, depth)
 	}
 
 	node, depth = trie.Descend(&[]hash.Bit{1, 1, 1})
-	if (*node).elements[0].Value != "g" || depth != 2 {
+	if (*node).Elements[0].Value != "g" || depth != 2 {
 		t.Fatalf("expected: (g, 2) | got: (%v, %v)\n",
-			(*node).elements[0].Value, depth)
+			(*node).Elements[0].Value, depth)
 	}
 }
 

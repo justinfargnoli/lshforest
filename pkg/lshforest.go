@@ -58,7 +58,7 @@ func (f *LSHForest) Query(vector *[]float64, m uint) *[]interface{} {
 		depths = append(depths, depth)
 	}
 
-	elements := f.syncAscend(&nodes, &depths)
+	elements := f.syncAscend(&nodes, &depths, m)
 	elements = elementsSort(elements)
 
 	var values []interface{}
@@ -72,6 +72,55 @@ func elementsSort(elements *[]lshtree.Element) *[]lshtree.Element {
 	panic("unimplemented")
 }
 
-func (f *LSHForest) syncAscend(node *[]*lshtree.Node, depth *[]uint) *[]lshtree.Element {
-	panic("unimplemented")
+func maxUint(slice *[]uint) uint {
+	var max uint
+	for _, num := range *slice {
+		if num > max {
+			max = num
+		}
+	}
+	return max
+}
+
+func distinctElements(elements *[]lshtree.Element) uint {
+	var count map[lshtree.Element]uint
+	for _, element := range *elements {
+		count[element]++
+	}
+	return uint(len(count))
+}
+
+func unionElements(e1, e2 *[]lshtree.Element) {
+	var count map[lshtree.Element]uint
+	for _, element := range *e1 {
+		count[element]++
+	}
+	for _, element := range *e2 {
+		if _, ok := count[element]; !ok {
+			*e1 = append(*e1, element)
+		}
+	}
+}
+
+func (f *LSHForest) syncAscend(nodes *[]*lshtree.Node, depths *[]uint, m uint) *[]lshtree.Element {
+	x := maxUint(depths)
+	var candidates []lshtree.Element
+	l, c := len(f.trees), 0
+	for x > 0 && (len(candidates) < c*l ||
+		distinctElements(&candidates) < m) {
+		for i := 0; i < l; i++ {
+			if (*depths)[i] == x {
+				descendants := (*nodes)[i].Decendants()
+				var descendantElements []lshtree.Element
+				for _, nodes := range descendants {
+					descendantElements = append(descendantElements, nodes.Elements...)
+				}
+				unionElements(&candidates, &descendantElements)
+				(*nodes)[i] = (*nodes)[i].Parent
+				(*depths)[i]--
+			}
+		}
+		x--
+	}
+	return &candidates
 }

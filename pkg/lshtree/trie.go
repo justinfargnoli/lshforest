@@ -37,7 +37,7 @@ func (t Trie) Inorder(function func(*Node)) {
 // Insert adds an element to the tire
 func (t *Trie) Insert(element Element) {
 	if t.root == nil {
-		t.root = &Node{elements: []Element{element}}
+		t.root = &Node{Elements: []Element{element}}
 	} else {
 		t.root.insert(element, 0)
 	}
@@ -72,7 +72,7 @@ const (
 
 // Node is a node in the Trie
 type Node struct {
-	elements            []Element
+	Elements            []Element
 	left, right, Parent *Node
 }
 
@@ -81,16 +81,27 @@ func (n *Node) isInternal() bool {
 }
 
 func (n *Node) isLeaf() bool {
-	return n.left == nil && n.right == nil && len(n.elements) == 1
+	return n.left == nil && n.right == nil && len(n.Elements) == 1
 }
 
 func (n *Node) isLeafBucket() bool {
-	return n.left == nil && n.right == nil && len(n.elements) >= 1
+	return n.left == nil && n.right == nil && len(n.Elements) >= 1
 }
 
 // Decendants returns the children of the node
-func (n *Node) Decendants() (*Node, *Node) {
-	return n.left, n.right
+func (n *Node) Decendants() ([]*Node) {
+	var nodes []*Node
+	if n.left != nil {
+		n.left.preorder(func(node *Node) {
+			nodes = append(nodes, node)
+		})
+	}
+	if n.right != nil {
+		n.right.preorder(func(node *Node) {
+			nodes = append(nodes, node)
+		})
+	}
+	return nodes
 }
 
 func (n *Node) preorder(function func(*Node)) {
@@ -152,51 +163,51 @@ func (n *Node) get(hash *[]hash.Bit, depth uint) *[]Element {
 		}
 		return n.right.get(hash, depth+1)
 	}
-	return &n.elements
+	return &n.Elements
 }
 
 func (n *Node) insert(element Element, depth uint) {
 	if n.isInternal() {
 		if (*element.hash)[depth] == left {
 			if n.left == nil {
-				n.left = &Node{elements: []Element{element}, Parent: n}
+				n.left = &Node{Elements: []Element{element}, Parent: n}
 			} else {
 				n.left.insert(element, depth+1)
 			}
 		} else {
 			if n.right == nil {
-				n.right = &Node{elements: []Element{element}, Parent: n}
+				n.right = &Node{Elements: []Element{element}, Parent: n}
 			} else {
 				n.right.insert(element, depth+1)
 			}
 		}
 	} else if n.isLeaf() {
 		if depth == uint(len(*element.hash)) {
-			n.elements = append(n.elements, element)
+			n.Elements = append(n.Elements, element)
 			return
 		}
-		if (*element.hash)[depth] == (*n.elements[0].hash)[depth] { // they're going the same way
+		if (*element.hash)[depth] == (*n.Elements[0].hash)[depth] { // they're going the same way
 			if (*element.hash)[depth] == left { // they're going left
-				n.left = &Node{Parent: n, elements: n.elements}
-				n.elements = []Element{}
+				n.left = &Node{Parent: n, Elements: n.Elements}
+				n.Elements = []Element{}
 				n.left.insert(element, depth+1)
 			} else { // they're going right
-				n.right = &Node{Parent: n, elements: n.elements}
-				n.elements = []Element{}
+				n.right = &Node{Parent: n, Elements: n.Elements}
+				n.Elements = []Element{}
 				n.right.insert(element, depth+1)
 			}
 		} else { // they're going different ways
 			if (*element.hash)[depth] == left { // element goes left & node goes right
-				n.left = &Node{Parent: n, elements: []Element{element}}
-				n.right = &Node{Parent: n, elements: n.elements}
-				n.elements = []Element{}
+				n.left = &Node{Parent: n, Elements: []Element{element}}
+				n.right = &Node{Parent: n, Elements: n.Elements}
+				n.Elements = []Element{}
 			} else { // node goes left & element goes right
-				n.left = &Node{Parent: n, elements: n.elements}
-				n.right = &Node{Parent: n, elements: []Element{element}}
-				n.elements = []Element{}
+				n.left = &Node{Parent: n, Elements: n.Elements}
+				n.right = &Node{Parent: n, Elements: []Element{element}}
+				n.Elements = []Element{}
 			}
 		}
 	} else {
-		n.elements = append(n.elements, element)
+		n.Elements = append(n.Elements, element)
 	}
 }
