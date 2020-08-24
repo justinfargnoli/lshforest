@@ -94,6 +94,9 @@ func TestEmptyTrie(t *testing.T) {
 	trie.Get(&[]hash.Bit{})
 	trie.Descend(&[]hash.Bit{})
 	trie.Insert(Element{})
+	if trie.root != nil {
+		t.Fatal("root != nil")
+	}
 }
 
 func TestInsert(t *testing.T) {

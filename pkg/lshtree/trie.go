@@ -1,6 +1,9 @@
 package lshtree
 
-import "github.com/justinfargnoli/lshforest/pkg/hash"
+import (
+	"errors"
+	"github.com/justinfargnoli/lshforest/pkg/hash"
+)
 
 // Trie is a prefix tree which uses a Element.hash, a []Bit, to determine the
 // elements prefix
@@ -35,12 +38,16 @@ func (t Trie) Inorder(function func(*Node)) {
 }
 
 // Insert adds an element to the tire
-func (t *Trie) Insert(element Element) {
+func (t *Trie) Insert(element Element) error {
+	if element.hash == nil {
+		return errors.New("element.hash == nil")
+	}
 	if t.root == nil {
 		t.root = &Node{Elements: []Element{element}}
 	} else {
 		t.root.insert(element, 0)
 	}
+	return nil
 }
 
 // Descend returns the leaf with the larges prefix matching hash
