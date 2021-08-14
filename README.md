@@ -6,7 +6,7 @@ Cosine/Simhash LSH Forest in Golang
 
 Install: `go get github.com/justinfargnoli/lshforest`
 
-This is an implementation of LSH Forest as describes in the following paper (http://infolab.stanford.edu/~bawa/Pub/similarity.pdf).
+This is an implementation of a LSH Forest as described in the following paper (http://infolab.stanford.edu/~bawa/Pub/similarity.pdf).
 
-This library, currently, is only working to support consine similarity. However, pull 
+This library, currently, is only supports cosine similarity. However, pull 
 requests to support other applicable similarity metrics are welcome :)
