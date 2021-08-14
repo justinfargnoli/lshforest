@@ -45,10 +45,10 @@ func NewSimhash(hyperplanes *[]Hyperplane, vector *[]float64) *[]Bit {
 	return &simhash
 }
 
-// Hyperplane is a dim dimensinoal hyperplane
+// Hyperplane is a dim dimensional hyperplane
 type Hyperplane []float64
 
-// NewHyperplanes constusts a hyperplane given number of hyperplanes to
+// NewHyperplanes constructs a hyperplane given number of hyperplanes to
 // construct and the dimension of each hyperplane
 func NewHyperplanes(count, dim uint) *[]Hyperplane {
 	hyperplanes := make([]Hyperplane, count)
